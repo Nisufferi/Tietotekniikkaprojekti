@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <canvas id="blueprint-canvas" style="border:1px solid #000000;">
+        <img src="output.svg" alt="blueprint">
+    </canvas>
+    <script>
+        const canvas = document.getElementById('blueprint-canvas');
+        var context = canvas.getContext('2d');
+        var i = -1;
+        var positions = []
+
+        width = window.innerWidth;
+        height = 3*window.innerWidth/4;
+
+        // Kanvaksen skaalaus
+        context.canvas.width = width;
+        context.canvas.height = height;
+
+        // Kuva kanvaksen sisälle ja koko skaalautumaan kanvaksen mukaan
+        var img = new Image();
+        img.onload = function () {
+            context.drawImage(img, 0, 0, width, height);
+        }
+        
+        // Tähän kuva rajapinnasta
+        img.src = "http://127.0.0.1:5500/iot-client/convertertest/output.svg";
+
+        function getMousePos(canvas, evt) {
+            i++;
+            var rect = canvas.getBoundingClientRect();
+            return {
+                x: evt.clientX - rect.left,
+                y: evt.clientY - rect.top
+            };
+        }
+
+        canvas.addEventListener('click', function (evt) {
+            var mousePos = getMousePos(canvas, evt);
+
+            // positions == canvasilla klikattujen pisteiden x/y koodrinaatit suhteessa näytönkokoon
+            // piirretään pallo positionin koordinaatteihin
+            positions[i] = { x: (width - mousePos.x) / width, y: (height - mousePos.y) / height}
+            context.beginPath();
+            context.arc(mousePos.x, mousePos.y, 36, 0, 2 * Math.PI);
+            context.fillStyle = "black";
+            context.fill();
+            console.log(positions);
+        }, false);
+    </script>
+</body>
+
+</html>
